@@ -20,7 +20,7 @@ export const emailService = {
       throw new Error('Variáveis MAIL_TO ou MAIL_FROM não configuradas');
     }
 
-    const assunto = `Novo Pedido - ${pedido.codigoPedido}`;
+    const assunto = 'PedidosRenault';
 
     const corpo = `NOVO PEDIDO
 
