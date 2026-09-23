@@ -1,12 +1,9 @@
 export type PedidoInput = {
-  codigoPedido: string;
-  cliente: string;
-  produto: string;
+  item: string;
+  modelo: string;
+  versao: string;
+  nomePeca: string;
+  gfpg: string;
   quantidade: string;
-  dataPedido: string;
-  centroCusto?: string;
-  responsavel: string;
-  unidade?: string;
-  valorPedido?: string;
-  observacao?: string;
+  chavePedido: string;
 };

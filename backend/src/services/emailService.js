@@ -22,35 +22,26 @@ exports.emailService = {
         const assunto = 'PedidosRenault';
         const corpo = `NOVO PEDIDO
 
-Código do Pedido:
-${pedido.codigoPedido}
+Item:
+${pedido.item}
 
-Cliente:
-${pedido.cliente}
+Modelo:
+${pedido.modelo}
 
-Produto:
-${pedido.produto}
+Versão:
+${pedido.versao}
+
+Nome da Peça:
+${pedido.nomePeca}
+
+GFPG:
+${pedido.gfpg}
 
 Quantidade:
 ${pedido.quantidade}
 
-Data do Pedido:
-${pedido.dataPedido}
-
-Centro de Custo:
-${pedido.centroCusto || '—'}
-
-Responsável:
-${pedido.responsavel}
-
-Unidade:
-${pedido.unidade || '—'}
-
-Valor do Pedido:
-${pedido.valorPedido || '—'}
-
-Observação:
-${pedido.observacao || '—'}`;
+Chave do Pedido:
+${pedido.chavePedido}`;
         try {
             const data = await resend.emails.send({
                 from: mailFrom,

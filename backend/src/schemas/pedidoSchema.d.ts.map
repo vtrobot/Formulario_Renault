@@ -1,1 +1,1 @@
-{"version":3,"file":"pedidoSchema.d.ts","sourceRoot":"","sources":["pedidoSchema.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,CAAC,EAAE,MAAM,KAAK,CAAC;AAExB,eAAO,MAAM,YAAY;;;;;;;;;;;iBAcvB,CAAC;AAEH,MAAM,MAAM,WAAW,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,YAAY,CAAC,CAAC"}
+{"version":3,"file":"pedidoSchema.d.ts","sourceRoot":"","sources":["pedidoSchema.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,CAAC,EAAE,MAAM,KAAK,CAAC;AAExB,eAAO,MAAM,YAAY;;;;;;;;iBAWvB,CAAC;AAEH,MAAM,MAAM,WAAW,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,YAAY,CAAC,CAAC"}

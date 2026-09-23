@@ -6,19 +6,16 @@ import { api } from '../services/api';
 import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 const pedidoSchema = z.object({
-  codigoPedido: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
-  cliente: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
-  produto: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
+  item: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
+  modelo: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
+  versao: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
+  nomePeca: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
+  gfpg: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
   quantidade: z.string().min(1, "Obrigatório").refine((val) => {
     const num = Number(val);
     return !isNaN(num) && num > 0;
   }, { message: "Deve ser um número maior que zero" }),
-  dataPedido: z.string().min(1, "Obrigatório").max(10, "Formato DD/MM/AAAA").regex(/^\d{2}\/\d{2}\/\d{4}$/, "Formato inválido"),
-  centroCusto: z.string().max(100, "Máximo de 100 caracteres").optional().or(z.literal("")),
-  responsavel: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
-  unidade: z.string().max(100, "Máximo de 100 caracteres").optional().or(z.literal("")),
-  valorPedido: z.string().max(100, "Máximo de 100 caracteres").optional().or(z.literal("")),
-  observacao: z.string().max(500, "Máximo de 500 caracteres").optional().or(z.literal(""))
+  chavePedido: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
 });
 
 type PedidoFormValues = z.infer<typeof pedidoSchema>;
@@ -76,33 +73,33 @@ export function PedidoForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
           <div>
-            <label className="label-text">Código do Pedido *</label>
-            <input type="text" {...register('codigoPedido')} className="input-field" placeholder="Ex: 123456" />
-            {errors.codigoPedido && <p className="error-text">{errors.codigoPedido.message}</p>}
+            <label className="label-text">Item *</label>
+            <input type="text" {...register('item')} className="input-field" placeholder="Item" />
+            {errors.item && <p className="error-text">{errors.item.message}</p>}
           </div>
 
           <div>
-            <label className="label-text">Data do Pedido *</label>
-            <input type="text" {...register('dataPedido')} className="input-field" placeholder="DD/MM/AAAA" />
-            {errors.dataPedido && <p className="error-text">{errors.dataPedido.message}</p>}
+            <label className="label-text">Modelo *</label>
+            <input type="text" {...register('modelo')} className="input-field" placeholder="Modelo" />
+            {errors.modelo && <p className="error-text">{errors.modelo.message}</p>}
           </div>
 
           <div>
-            <label className="label-text">Cliente *</label>
-            <input type="text" {...register('cliente')} className="input-field" placeholder="Nome do cliente" />
-            {errors.cliente && <p className="error-text">{errors.cliente.message}</p>}
+            <label className="label-text">Versão *</label>
+            <input type="text" {...register('versao')} className="input-field" placeholder="Versão" />
+            {errors.versao && <p className="error-text">{errors.versao.message}</p>}
           </div>
 
           <div>
-            <label className="label-text">Responsável *</label>
-            <input type="text" {...register('responsavel')} className="input-field" placeholder="Nome do responsável" />
-            {errors.responsavel && <p className="error-text">{errors.responsavel.message}</p>}
+            <label className="label-text">Nome da Peça *</label>
+            <input type="text" {...register('nomePeca')} className="input-field" placeholder="Nome da Peça" />
+            {errors.nomePeca && <p className="error-text">{errors.nomePeca.message}</p>}
           </div>
 
-          <div className="md:col-span-2">
-            <label className="label-text">Produto *</label>
-            <input type="text" {...register('produto')} className="input-field" placeholder="Descrição do produto" />
-            {errors.produto && <p className="error-text">{errors.produto.message}</p>}
+          <div>
+            <label className="label-text">GFPG *</label>
+            <input type="text" {...register('gfpg')} className="input-field" placeholder="GFPG" />
+            {errors.gfpg && <p className="error-text">{errors.gfpg.message}</p>}
           </div>
 
           <div>
@@ -111,28 +108,10 @@ export function PedidoForm() {
             {errors.quantidade && <p className="error-text">{errors.quantidade.message}</p>}
           </div>
 
-          <div>
-            <label className="label-text">Valor do Pedido</label>
-            <input type="text" {...register('valorPedido')} className="input-field" placeholder="Ex: 1500.00" />
-            {errors.valorPedido && <p className="error-text">{errors.valorPedido.message}</p>}
-          </div>
-
-          <div>
-            <label className="label-text">Centro de Custo</label>
-            <input type="text" {...register('centroCusto')} className="input-field" placeholder="Ex: CC001" />
-            {errors.centroCusto && <p className="error-text">{errors.centroCusto.message}</p>}
-          </div>
-
-          <div>
-            <label className="label-text">Unidade</label>
-            <input type="text" {...register('unidade')} className="input-field" placeholder="Ex: Curitiba" />
-            {errors.unidade && <p className="error-text">{errors.unidade.message}</p>}
-          </div>
-
           <div className="md:col-span-2">
-            <label className="label-text">Observação</label>
-            <textarea {...register('observacao')} className="input-field h-24 resize-none" placeholder="Observações adicionais..." />
-            {errors.observacao && <p className="error-text">{errors.observacao.message}</p>}
+            <label className="label-text">Chave do Pedido *</label>
+            <input type="text" {...register('chavePedido')} className="input-field" placeholder="Chave do Pedido" />
+            {errors.chavePedido && <p className="error-text">{errors.chavePedido.message}</p>}
           </div>
 
         </div>
