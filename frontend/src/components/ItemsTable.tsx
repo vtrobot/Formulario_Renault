@@ -7,7 +7,6 @@ import {
   Pencil,
   Package,
   BarChart3,
-  DollarSign,
   CheckCircle2,
   Inbox,
 } from 'lucide-react';
@@ -21,10 +20,6 @@ interface ItemsTableProps {
 export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps) {
   const totalModelos = new Set(items.map((i) => i.modelo)).size;
   const totalQuantidade = items.reduce((acc, i) => acc + Number(i.quantidade), 0);
-  const totalLcpu = items.reduce((acc, i) => acc + i.subtotalLcpu, 0);
-
-  const formatCurrency = (value: number) =>
-    value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 
 
@@ -42,9 +37,7 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
                 <span className="badge badge--count">{items.length} {items.length === 1 ? 'item' : 'itens'}</span>
               )}
             </div>
-            <p className="card-description">
-              Relação consolidada para simulação do custo LCPU e ordem fabril
-            </p>
+
           </div>
         </div>
         {items.length > 0 && (
@@ -81,7 +74,7 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
                   <th>Nome da Peça</th>
                   <th>GFPG</th>
                   <th>Qtd</th>
-                  <th style={{ textAlign: 'right' }}>Subtotal LCPU</th>
+
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -100,7 +93,7 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
                       <span className="badge badge--navy">{item.gfpg}</span>
                     </td>
                     <td className="td-center">{Number(item.quantidade).toLocaleString('pt-BR')}</td>
-                    <td className="td-right">{formatCurrency(item.subtotalLcpu)}</td>
+
                     <td>
                       <div className="td-actions">
                         <button type="button" className="btn-icon" title="Editar item">
@@ -132,10 +125,7 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
                 <Package size={15} className="stat-item-icon" strokeWidth={1.75} />
                 Volume Físico: <span className="stat-value">{totalQuantidade.toLocaleString('pt-BR')} unidades</span>
               </div>
-              <div className="stat-item">
-                <DollarSign size={15} className="stat-item-icon" strokeWidth={1.75} />
-                LCPU Total: <span className="stat-value stat-value--highlight">{formatCurrency(totalLcpu)}</span>
-              </div>
+
             </div>
             <button type="button" className="btn btn-primary">
               <CheckCircle2 size={16} strokeWidth={1.75} />
