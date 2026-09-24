@@ -1,5 +1,5 @@
 import type { FastifyPluginAsync } from 'fastify';
-import { pedidoSchema } from '../schemas/pedidoSchema';
+import { pedidoSchema, pedidoLoteSchema } from '../schemas/pedidoSchema';
 import { emailService } from '../services/emailService';
 
 export const pedidoRoutes: FastifyPluginAsync = async (fastify, opts) => {
@@ -33,6 +33,35 @@ export const pedidoRoutes: FastifyPluginAsync = async (fastify, opts) => {
       return reply.status(500).send({
         success: false,
         message: "Não foi possível enviar o pedido."
+      });
+    }
+  });
+
+  fastify.post('/pedidos/lote', async (request, reply) => {
+    try {
+      const parseResult = pedidoLoteSchema.safeParse(request.body);
+
+      if (!parseResult.success) {
+        return reply.status(400).send({
+          success: false,
+          message: "Dados inválidos. Verifique os itens e tente novamente."
+        });
+      }
+
+      const lote = parseResult.data;
+
+      await emailService.enviarEmailPedidoLote(lote);
+
+      return reply.status(200).send({
+        success: true,
+        message: `${lote.itens.length} ${lote.itens.length === 1 ? 'item enviado' : 'itens enviados'} com sucesso.`
+      });
+
+    } catch (error) {
+      console.error('Erro na rota POST /pedidos/lote:', error);
+      return reply.status(500).send({
+        success: false,
+        message: "Não foi possível enviar os itens por e-mail."
       });
     }
   });

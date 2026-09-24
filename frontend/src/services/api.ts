@@ -19,5 +19,23 @@ export const api = {
     }
 
     return data;
-  }
+  },
+
+  async enviarPedidoLote(itens: PedidoInput[]) {
+    const response = await fetch(`${API_URL}/pedidos/lote`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ itens }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Erro ao enviar itens por e-mail');
+    }
+
+    return data;
+  },
 };

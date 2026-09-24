@@ -2,10 +2,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '../services/api';
-import type { PedidoInput, PedidoItem } from '../types/pedido';
+import type { PedidoItem } from '../types/pedido';
 import {
-  Send,
   CheckCircle2,
   AlertCircle,
   Hash,
@@ -19,7 +17,6 @@ import {
   Eraser,
   ListPlus,
   Sparkles,
-  Loader2,
 } from 'lucide-react';
 
 /* ─── Validation Schema ──────────────────────────────────────────── */
@@ -58,13 +55,11 @@ interface PedidoFormProps {
 }
 
 export function PedidoForm({ onAddItem }: PedidoFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
   const {
     register,
-    handleSubmit,
     reset,
     setValue,
     getValues,
@@ -87,27 +82,6 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
     (Object.keys(EXAMPLE_DATA) as (keyof PedidoFormValues)[]).forEach((key) => {
       setValue(key, EXAMPLE_DATA[key] ?? '', { shouldValidate: true });
     });
-  };
-
-  const onSubmit = async (data: PedidoFormValues) => {
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-    setErrorMessage('');
-    try {
-      await api.enviarPedido(data as PedidoInput);
-      setSubmitStatus('success');
-      reset();
-      setTimeout(() => setSubmitStatus('idle'), 5000);
-    } catch (error: any) {
-      console.error(error);
-      setSubmitStatus('error');
-      setErrorMessage(
-        error.message || 'Não foi possível enviar o pedido. Tente novamente.'
-      );
-      setTimeout(() => setSubmitStatus('idle'), 8000);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleAddToList = () => {
@@ -176,7 +150,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <div className="form-grid">
           {/* Row 1: Item + Modelo */}
           <div className="form-row">
@@ -313,18 +287,6 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
             Limpar Campos
           </button>
           <div className="form-actions-right">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <Loader2 size={16} className="spinner" strokeWidth={2} />
-              ) : (
-                <Send size={16} strokeWidth={1.75} />
-              )}
-              {isSubmitting ? 'Enviando...' : 'Enviar Pedido'}
-            </button>
             <button
               type="button"
               className="btn btn-outline-amber"

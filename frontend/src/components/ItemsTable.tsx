@@ -1,5 +1,7 @@
 
+import { useState } from 'react';
 import type { PedidoItem } from '../types/pedido';
+import { api } from '../services/api';
 import {
   Table2,
   Download,
@@ -8,7 +10,10 @@ import {
   Package,
   BarChart3,
   CheckCircle2,
+  AlertCircle,
   Inbox,
+  Send,
+  Loader2,
 } from 'lucide-react';
 
 interface ItemsTableProps {
@@ -21,7 +26,32 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
   const totalModelos = new Set(items.map((i) => i.modelo)).size;
   const totalQuantidade = items.reduce((acc, i) => acc + Number(i.quantidade), 0);
 
+  const [isSending, setIsSending] = useState(false);
+  const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [sendMessage, setSendMessage] = useState('');
 
+  const handleSendEmail = async () => {
+    if (items.length === 0) return;
+
+    setIsSending(true);
+    setSendStatus('idle');
+    setSendMessage('');
+
+    try {
+      const itensParaEnviar = items.map(({ id, subtotalLcpu, ...rest }) => rest);
+      const result = await api.enviarPedidoLote(itensParaEnviar);
+      setSendStatus('success');
+      setSendMessage(result.message || 'Itens enviados por e-mail com sucesso!');
+      setTimeout(() => setSendStatus('idle'), 6000);
+    } catch (error: any) {
+      console.error(error);
+      setSendStatus('error');
+      setSendMessage(error.message || 'Não foi possível enviar os itens por e-mail.');
+      setTimeout(() => setSendStatus('idle'), 8000);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   return (
     <section className="card table-section">
@@ -53,6 +83,19 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
           </div>
         )}
       </div>
+
+      {sendStatus === 'success' && (
+        <div className="toast toast--success">
+          <CheckCircle2 size={18} strokeWidth={1.75} />
+          <span>{sendMessage}</span>
+        </div>
+      )}
+      {sendStatus === 'error' && (
+        <div className="toast toast--error">
+          <AlertCircle size={18} strokeWidth={1.75} />
+          <span>{sendMessage}</span>
+        </div>
+      )}
 
       {items.length === 0 ? (
         <div className="empty-state">
@@ -127,9 +170,18 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
               </div>
 
             </div>
-            <button type="button" className="btn btn-primary">
-              <CheckCircle2 size={16} strokeWidth={1.75} />
-              Finalizar & Aprovar Ordem
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={isSending}
+              onClick={handleSendEmail}
+            >
+              {isSending ? (
+                <Loader2 size={16} className="spinner" strokeWidth={2} />
+              ) : (
+                <Send size={16} strokeWidth={1.75} />
+              )}
+              {isSending ? 'Enviando...' : 'Enviar Pedido'}
             </button>
           </div>
         </>

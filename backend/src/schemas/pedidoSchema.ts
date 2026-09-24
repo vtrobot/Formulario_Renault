@@ -14,3 +14,9 @@ export const pedidoSchema = z.object({
 });
 
 export type PedidoInput = z.infer<typeof pedidoSchema>;
+
+export const pedidoLoteSchema = z.object({
+  itens: z.array(pedidoSchema).min(1, "Pelo menos um item é obrigatório"),
+});
+
+export type PedidoLoteInput = z.infer<typeof pedidoLoteSchema>;
