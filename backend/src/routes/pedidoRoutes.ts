@@ -29,10 +29,11 @@ export const pedidoRoutes: FastifyPluginAsync = async (fastify, opts) => {
       
     } catch (error) {
       console.error('Erro na rota POST /pedidos:', error);
-      // Responder sempre com a mesma mensagem genérica em caso de erro interno/Resend
+      const errorMessage = error instanceof Error ? error.message : String(error);
       return reply.status(500).send({
         success: false,
-        message: "Não foi possível enviar o pedido."
+        message: "Não foi possível enviar o pedido.",
+        debug: errorMessage
       });
     }
   });
@@ -59,9 +60,11 @@ export const pedidoRoutes: FastifyPluginAsync = async (fastify, opts) => {
 
     } catch (error) {
       console.error('Erro na rota POST /pedidos/lote:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       return reply.status(500).send({
         success: false,
-        message: "Não foi possível enviar os itens por e-mail."
+        message: "Não foi possível enviar os itens por e-mail.",
+        debug: errorMessage
       });
     }
   });
