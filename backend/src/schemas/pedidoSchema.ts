@@ -4,7 +4,7 @@ export const pedidoSchema = z.object({
   item: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
   modelo: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
   versao: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
-  nomePeca: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
+  nomePeca: z.string().min(1, "Obrigatório").max(200, "Máximo de 200 caracteres"),
   gfpg: z.string().min(1, "Obrigatório").max(100, "Máximo de 100 caracteres"),
   quantidade: z.string().min(1, "Obrigatório").refine((val) => {
     const num = Number(val);

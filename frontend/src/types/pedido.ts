@@ -7,3 +7,8 @@ export type PedidoInput = {
   quantidade: string;
   chavePedido: string;
 };
+
+export type PedidoItem = PedidoInput & {
+  id: string;
+  subtotalLcpu: number;
+};
