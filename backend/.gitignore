@@ -1,0 +1,16 @@
+node_modules/
+dist/
+
+# Compiled TypeScript output (Vercel compiles .ts natively)
+**/*.js
+**/*.js.map
+**/*.d.ts
+**/*.d.ts.map
+
+# Keep config files
+!package.json
+!tsconfig.json
+!vercel.json
+
+# Environment
+.env
