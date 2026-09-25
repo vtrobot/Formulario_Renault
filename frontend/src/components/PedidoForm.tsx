@@ -13,7 +13,6 @@ import {
   Layers,
   Package,
   Key,
-  RefreshCw,
   Eraser,
   ListPlus,
   Sparkles,
