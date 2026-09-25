@@ -42,6 +42,7 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
       const result = await api.enviarPedidoLote(itensParaEnviar);
       setSendStatus('success');
       setSendMessage(result.message || 'Itens enviados por e-mail com sucesso!');
+      onClearAll();
       setTimeout(() => setSendStatus('idle'), 6000);
     } catch (error: any) {
       console.error(error);
