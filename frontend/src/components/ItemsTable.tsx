@@ -97,95 +97,94 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
         </div>
       )}
 
-      {items.length === 0 ? (
-        <div className="empty-state">
-          <Inbox size={48} strokeWidth={1} className="empty-state-icon" />
-          <p className="empty-state-title">Nenhum item adicionado</p>
-          <p className="empty-state-text">
-            Preencha o formulário acima e clique em "Adicionar à Lista de Itens"
-          </p>
-        </div>
-      ) : (
-        <>
-          <div className="table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Modelo</th>
-                  <th>Versão</th>
-                  <th>Nome da Peça</th>
-                  <th>GFPG</th>
-                  <th>Qtd</th>
-
-                  <th>Ações</th>
+      <div className="table-wrapper">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Modelo</th>
+              <th>Versão</th>
+              <th>Nome da Peça</th>
+              <th>GFPG</th>
+              <th>Qtd</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.length === 0 ? (
+              <tr>
+                <td colSpan={7}>
+                  <div className="empty-state">
+                    <Inbox size={48} strokeWidth={1} className="empty-state-icon" />
+                    <p className="empty-state-title">Nenhum item adicionado</p>
+                    <p className="empty-state-text">
+                      Preencha o formulário acima e clique em "Adicionar à Lista de Itens"
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              items.map((item, index) => (
+                <tr key={item.id} style={{ animationDelay: `${index * 50}ms` }}>
+                  <td>
+                    <strong>{item.item}</strong>
+                  </td>
+                  <td>{item.modelo}</td>
+                  <td>
+                    <span className="badge badge--version">{item.versao}</span>
+                  </td>
+                  <td>{item.nomePeca}</td>
+                  <td>
+                    <span className="badge badge--navy">{item.gfpg}</span>
+                  </td>
+                  <td className="td-center">{Number(item.quantidade).toLocaleString('pt-BR')}</td>
+                  <td>
+                    <div className="td-actions">
+                      <button type="button" className="btn-icon" title="Editar item">
+                        <Pencil size={15} strokeWidth={1.75} />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-icon btn-icon--danger"
+                        title="Remover item"
+                        onClick={() => onRemoveItem(item.id)}
+                      >
+                        <Trash2 size={15} strokeWidth={1.75} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {items.map((item, index) => (
-                  <tr key={item.id} style={{ animationDelay: `${index * 50}ms` }}>
-                    <td>
-                      <strong>{item.item}</strong>
-                    </td>
-                    <td>{item.modelo}</td>
-                    <td>
-                      <span className="badge badge--version">{item.versao}</span>
-                    </td>
-                    <td>{item.nomePeca}</td>
-                    <td>
-                      <span className="badge badge--navy">{item.gfpg}</span>
-                    </td>
-                    <td className="td-center">{Number(item.quantidade).toLocaleString('pt-BR')}</td>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-                    <td>
-                      <div className="td-actions">
-                        <button type="button" className="btn-icon" title="Editar item">
-                          <Pencil size={15} strokeWidth={1.75} />
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-icon btn-icon--danger"
-                          title="Remover item"
-                          onClick={() => onRemoveItem(item.id)}
-                        >
-                          <Trash2 size={15} strokeWidth={1.75} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="table-footer">
+        <div className="table-stats">
+          <div className="stat-item">
+            <BarChart3 size={15} className="stat-item-icon" strokeWidth={1.75} />
+            Total de Modelos: <span className="stat-value">{totalModelos}</span>
           </div>
-
-          <div className="table-footer">
-            <div className="table-stats">
-              <div className="stat-item">
-                <BarChart3 size={15} className="stat-item-icon" strokeWidth={1.75} />
-                Total de Modelos: <span className="stat-value">{totalModelos}</span>
-              </div>
-              <div className="stat-item">
-                <Package size={15} className="stat-item-icon" strokeWidth={1.75} />
-                Volume Físico: <span className="stat-value">{totalQuantidade.toLocaleString('pt-BR')} unidades</span>
-              </div>
-
-            </div>
-            <button
-              type="button"
-              className="btn btn-primary"
-              disabled={isSending}
-              onClick={handleSendEmail}
-            >
-              {isSending ? (
-                <Loader2 size={16} className="spinner" strokeWidth={2} />
-              ) : (
-                <Send size={16} strokeWidth={1.75} />
-              )}
-              {isSending ? 'Enviando...' : 'Enviar Pedido'}
-            </button>
+          <div className="stat-item">
+            <Package size={15} className="stat-item-icon" strokeWidth={1.75} />
+            Volume Físico: <span className="stat-value">{totalQuantidade.toLocaleString('pt-BR')} unidades</span>
           </div>
-        </>
-      )}
+        </div>
+        <button
+          type="button"
+          className="btn btn-primary"
+          disabled={isSending || items.length === 0}
+          onClick={handleSendEmail}
+        >
+          {isSending ? (
+            <Loader2 size={16} className="spinner" strokeWidth={2} />
+          ) : (
+            <Send size={16} strokeWidth={1.75} />
+          )}
+          {isSending ? 'Enviando...' : 'Enviar Pedido'}
+        </button>
+      </div>
     </section>
   );
 }
