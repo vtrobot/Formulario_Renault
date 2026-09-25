@@ -22,7 +22,7 @@ export const emailService = {
 
     const assunto = 'PedidosRenault';
 
-    const corpo = `Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido|${pedido.item};${pedido.modelo};${pedido.versao};${pedido.nomePeca};${pedido.gfpg};${pedido.quantidade};${pedido.chavePedido}`;
+    const corpo = `Item;Modelo;Versao;NomePeca;GfPg;Quantidade|${pedido.item};${pedido.modelo};${pedido.versao};${pedido.nomePeca};${pedido.gfpg};${pedido.quantidade}`;
 
     try {
       const data = await resend.emails.send({
@@ -58,11 +58,11 @@ export const emailService = {
     const assunto = 'PedidosRenault';
 
     // Header row
-    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido';
+    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade';
 
     // Each item as a separate line
     const linhas = lote.itens.map(
-      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade};${item.chavePedido}`
+      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade}`
     );
 
     const corpo = [header, ...linhas].join('|');

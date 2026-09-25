@@ -5,7 +5,6 @@ export type PedidoInput = {
   nomePeca: string;
   gfpg: string;
   quantidade: string;
-  chavePedido: string;
 };
 
 export type PedidoItem = PedidoInput & {

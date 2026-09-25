@@ -12,7 +12,6 @@ import {
   Wrench,
   Layers,
   Package,
-  Key,
   Eraser,
   ListPlus,
   Sparkles,
@@ -32,7 +31,6 @@ const pedidoSchema = z.object({
     },
     { message: 'Deve ser um número maior que zero' }
   ),
-  chavePedido: z.string().min(1, 'Obrigatório').max(100),
 });
 
 type PedidoFormValues = z.infer<typeof pedidoSchema>;
@@ -45,7 +43,6 @@ const EXAMPLE_DATA: PedidoFormValues = {
   nomePeca: 'Eixo Estriado de Transmissão Central',
   gfpg: 'GFPG-01',
   quantidade: '100',
-  chavePedido: 'PED-96-2025-0849',
 };
 
 /* ─── Component ──────────────────────────────────────────────────── */
@@ -73,7 +70,6 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
       nomePeca: '',
       gfpg: '',
       quantidade: '',
-      chavePedido: '',
     },
   });
 
@@ -108,7 +104,6 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
       nomePeca: data.nomePeca,
       gfpg: data.gfpg,
       quantidade: data.quantidade,
-      chavePedido: data.chavePedido,
       subtotalLcpu: Math.round(qty * (14.5 + Math.random() * 3) * 100) / 100,
     };
 
@@ -249,29 +244,6 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
                 <span className="error-text">{errors.quantidade.message}</span>
               )}
             </div>
-          </div>
-
-          {/* Row 4: Chave do Pedido + Vincular */}
-          <div className="form-row-key">
-            <div className="form-group">
-              <label className="form-label" htmlFor="chavePedido">
-                <Key size={14} className="form-label-icon" strokeWidth={1.75} />
-                Chave do Pedido
-                {/* <span className="form-sublabel">Vinculação</span> */}
-              </label>
-              <input
-                id="chavePedido"
-                className={`input ${errors.chavePedido ? 'input--error' : ''}`}
-                placeholder="PED-96-2025-0849"
-                {...register('chavePedido')}
-              />
-              {errors.chavePedido && (
-                <span className="error-text">{errors.chavePedido.message}</span>
-              )}
-            </div>
-            {/* <button type="button" className="btn-vinculate" title="Vincular pedido">
-              <RefreshCw size={18} strokeWidth={1.75} />
-            </button> */}
           </div>
         </div>
 
