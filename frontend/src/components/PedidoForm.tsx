@@ -125,7 +125,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
             <Settings2 size={20} strokeWidth={1.75} />
           </div>
           <div>
-            <h2 className="card-title">Parâmetros do Componente</h2>
+            <h2 className="card-title">Parâmetros do Pedido</h2>
             <p className="card-description">
               Preencha os campos estruturais da ordem conforme engenharia de produto
             </p>
@@ -158,7 +158,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
               <label className="form-label" htmlFor="item">
                 <Hash size={14} className="form-label-icon" strokeWidth={1.75} />
                 Item (Código)
-                <span className="form-sublabel">Ex: 010, IT-96</span>
+                {/* <span className="form-sublabel">Ex: 010, IT-96</span> */}
               </label>
               <input
                 id="item"
@@ -172,7 +172,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
               <label className="form-label" htmlFor="modelo">
                 <Settings2 size={14} className="form-label-icon" strokeWidth={1.75} />
                 Modelo
-                <span className="form-sublabel">Linha / Equipamento</span>
+                {/* <span className="form-sublabel">Linha / Equipamento</span> */}
               </label>
               <input
                 id="modelo"
@@ -190,7 +190,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
               <label className="form-label" htmlFor="versao">
                 <GitFork size={14} className="form-label-icon" strokeWidth={1.75} />
                 Versão
-                <span className="form-sublabel">Rev. CAD</span>
+                {/* <span className="form-sublabel">Rev. CAD</span> */}
               </label>
               <input
                 id="versao"
@@ -204,7 +204,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
               <label className="form-label" htmlFor="nomePeca">
                 <Wrench size={14} className="form-label-icon" strokeWidth={1.75} />
                 Nome da Peça
-                <span className="form-sublabel">Nomenclatura Técnica</span>
+                {/* <span className="form-sublabel">Nomenclatura Técnica</span> */}
               </label>
               <input
                 id="nomePeca"
@@ -222,7 +222,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
               <label className="form-label" htmlFor="gfpg">
                 <Layers size={14} className="form-label-icon" strokeWidth={1.75} />
                 GFPG
-                <span className="form-sublabel">Grupo de Fluxo</span>
+                {/* <span className="form-sublabel">Grupo de Fluxo</span> */}
               </label>
               <input
                 id="gfpg"
@@ -236,7 +236,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
               <label className="form-label" htmlFor="quantidade">
                 <Package size={14} className="form-label-icon" strokeWidth={1.75} />
                 Quantidade
-                <span className="form-sublabel">Unidades</span>
+                {/* <span className="form-sublabel">Unidades</span> */}
               </label>
               <input
                 id="quantidade"
@@ -258,7 +258,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
               <label className="form-label" htmlFor="chavePedido">
                 <Key size={14} className="form-label-icon" strokeWidth={1.75} />
                 Chave do Pedido
-                <span className="form-sublabel">Vinculação</span>
+                {/* <span className="form-sublabel">Vinculação</span> */}
               </label>
               <input
                 id="chavePedido"
@@ -270,9 +270,9 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
                 <span className="error-text">{errors.chavePedido.message}</span>
               )}
             </div>
-            <button type="button" className="btn-vinculate" title="Vincular pedido">
+            {/* <button type="button" className="btn-vinculate" title="Vincular pedido">
               <RefreshCw size={18} strokeWidth={1.75} />
-            </button>
+            </button> */}
           </div>
         </div>
 

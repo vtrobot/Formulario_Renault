@@ -10,11 +10,11 @@ export function FormHeader({ onFillExample: _onFillExample }: FormHeaderProps) {
       <h1 className="page-title">
         Novo Pedido de Produção <span className="page-title-dot">•</span> LCPU
       </h1>
-      <p className="page-subtitle">
+      {/* <p className="page-subtitle">
         Entrada paramétrica de componentes industriais com apuração em tempo real
         de custo de mão de obra por unidade (Labor Cost Per Unit) e alocação de
         postos fabris.
-      </p>
+      </p> */}
     </div>
   );
 }
