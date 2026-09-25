@@ -121,7 +121,7 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
           <div>
             <h2 className="card-title">Parâmetros do Pedido</h2>
             <p className="card-description">
-              Preencha os campos estruturais da ordem conforme engenharia de produto
+              Preencha os campos do formulário e adicione à lista de itens para cálculo do LCPU
             </p>
           </div>
         </div>
