@@ -102,7 +102,7 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
         <table className="data-table">
           <thead>
             <tr>
-              <th>Item</th>
+              <th>Ref</th>
               <th>Modelo</th>
               <th>Versão</th>
               <th>Nome da Peça</th>
