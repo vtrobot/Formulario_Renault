@@ -11,6 +11,10 @@ function App() {
     setItems((prev) => [...prev, item]);
   };
 
+  const handleAddItems = (newItems: PedidoItem[]) => {
+    setItems((prev) => [...prev, ...newItems]);
+  };
+
   const handleRemoveItem = (id: string) => {
     setItems((prev) => prev.filter((i) => i.id !== id));
   };
@@ -22,7 +26,7 @@ function App() {
   return (
     <div className="page">
       <FormHeader onFillExample={() => {}} />
-      <PedidoForm onAddItem={handleAddItem} />
+      <PedidoForm onAddItem={handleAddItem} onAddItems={handleAddItems} />
       <ItemsTable
         items={items}
         onRemoveItem={handleRemoveItem}

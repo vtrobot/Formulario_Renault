@@ -14,9 +14,10 @@ import {
   Package,
   Eraser,
   ListPlus,
-  Sparkles,
+  Upload,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { CsvImportModal } from './CsvImportModal';
 
 /* ─── Validation Schema ──────────────────────────────────────────── */
 const pedidoSchema = z.object({
@@ -36,24 +37,16 @@ const pedidoSchema = z.object({
 
 type PedidoFormValues = z.infer<typeof pedidoSchema>;
 
-/* ─── Example Data ───────────────────────────────────────────────── */
-const EXAMPLE_DATA: PedidoFormValues = {
-  item: 'IT-9604',
-  modelo: 'Rotor Turbo 4500X',
-  versao: 'v3.2',
-  nomePeca: 'Eixo Estriado de Transmissão Central',
-  gfpg: 'GFPG-01',
-  quantidade: '100',
-};
-
 /* ─── Component ──────────────────────────────────────────────────── */
 interface PedidoFormProps {
   onAddItem: (item: PedidoItem) => void;
+  onAddItems?: (items: PedidoItem[]) => void;
 }
 
-export function PedidoForm({ onAddItem }: PedidoFormProps) {
+export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     register,
@@ -74,12 +67,6 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
       quantidade: '',
     },
   });
-
-  const fillExample = () => {
-    (Object.keys(EXAMPLE_DATA) as (keyof PedidoFormValues)[]).forEach((key) => {
-      setValue(key, EXAMPLE_DATA[key] ?? '', { shouldValidate: true });
-    });
-  };
 
   const [pecasList, setPecasList] = useState<string[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -237,11 +224,22 @@ export function PedidoForm({ onAddItem }: PedidoFormProps) {
             </p>
           </div>
         </div>
-        <button type="button" className="btn-link" onClick={fillExample}>
-          <Sparkles size={14} strokeWidth={1.75} />
-          Preencher Exemplo
+        <button type="button" className="btn-link" onClick={() => setIsModalOpen(true)}>
+          <Upload size={14} strokeWidth={1.75} />
+          Importar CSV
         </button>
       </div>
+
+      {isModalOpen && (
+        <CsvImportModal
+          onClose={() => setIsModalOpen(false)}
+          onImport={(items) => {
+            if (onAddItems) {
+              onAddItems(items);
+            }
+          }}
+        />
+      )}
 
       {submitStatus === 'success' && (
         <div className="toast toast--success">
