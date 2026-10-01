@@ -186,6 +186,12 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
           setValue('item', refs[0], { shouldValidate: true });
         } else {
           setValue('item', '', { shouldValidate: false });
+          if (refs.length > 1) {
+            setTimeout(() => {
+              document.getElementById('item')?.focus();
+              setIsReferenciaDropdownOpen(true);
+            }, 50);
+          }
         }
         setGfpgsList([]);
         setValue('gfpg', '', { shouldValidate: false });
@@ -221,13 +227,36 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
         // Se existir apenas um GFPG, preenche automaticamente
         if (gfpgs.length === 1) {
           setValue('gfpg', gfpgs[0], { shouldValidate: true });
+          const { data: autoData } = await supabase
+            .from('pecas')
+            .select('modelo, versao')
+            .eq('referencia', referenciaValue)
+            .eq('gfpg', gfpgs[0])
+            .limit(1)
+            .single();
+          if (autoData) {
+            setValue('modelo', (autoData as any).modelo ?? '', { shouldValidate: true });
+            setValue('versao', (autoData as any).versao ?? '', { shouldValidate: true });
+            setIsAutoFilled(true);
+          } else {
+            setValue('modelo', '', { shouldValidate: false });
+            setValue('versao', '', { shouldValidate: false });
+            setIsAutoFilled(false);
+          }
         } else {
           setValue('gfpg', '', { shouldValidate: false });
+          // Limpa modelo e versão ao trocar referência
+          setValue('modelo', '', { shouldValidate: false });
+          setValue('versao', '', { shouldValidate: false });
+          setIsAutoFilled(false);
+          
+          if (gfpgs.length > 1) {
+            setTimeout(() => {
+              document.getElementById('gfpg')?.focus();
+              setIsGfpgDropdownOpen(true);
+            }, 50);
+          }
         }
-        // Limpa modelo e versão ao trocar referência
-        setValue('modelo', '', { shouldValidate: false });
-        setValue('versao', '', { shouldValidate: false });
-        setIsAutoFilled(false);
       }
     }
 
