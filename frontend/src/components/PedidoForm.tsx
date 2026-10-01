@@ -111,6 +111,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
 
   const [gfpgsList, setGfpgsList] = useState<string[]>([]);
   const [isGfpgDropdownOpen, setIsGfpgDropdownOpen] = useState(false);
+  const gfpgValue = watch('gfpg');
   const [isAutoFilled, setIsAutoFilled] = useState(false);
 
   // Busca nomes de peças enquanto o usuário digita
@@ -285,6 +286,54 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
 
     fetchGfpgs();
   }, [referenciaValue]);
+
+  // Ao digitar GFPG diretamente, preenche Nome da Peça, Referência, Modelo e Versão se houver apenas uma correspondência
+  useEffect(() => {
+    async function fetchFromGfpg() {
+      if (!supabase || !gfpgValue || gfpgValue.trim() === '') {
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('pecas')
+        .select('nome_peca, referencia, modelo, versao')
+        .eq('gfpg', gfpgValue);
+
+      if (!error && data && data.length > 0) {
+        const nomesPecas = Array.from(new Set(data.map((p: any) => p.nome_peca).filter(Boolean)));
+        const referencias = Array.from(new Set(data.map((p: any) => String(p.referencia)).filter(Boolean)));
+
+        if (nomesPecas.length === 1) {
+          const currentNome = getValues('nomePeca');
+          if (currentNome !== nomesPecas[0]) {
+            setValue('nomePeca', nomesPecas[0] as string, { shouldValidate: true });
+          }
+        }
+
+        if (referencias.length === 1) {
+          const currentRef = getValues('item');
+          if (currentRef !== referencias[0]) {
+            setValue('item', referencias[0] as string, { shouldValidate: true });
+          }
+        }
+
+        const modelos = Array.from(new Set(data.map((p: any) => p.modelo).filter(Boolean)));
+        const versoes = Array.from(new Set(data.map((p: any) => p.versao).filter(Boolean)));
+
+        if (modelos.length === 1 && versoes.length === 1) {
+          const currentModelo = getValues('modelo');
+          const currentVersao = getValues('versao');
+          if (currentModelo !== modelos[0] || currentVersao !== versoes[0]) {
+            setValue('modelo', modelos[0] as string, { shouldValidate: true });
+            setValue('versao', versoes[0] as string, { shouldValidate: true });
+            setIsAutoFilled(true);
+          }
+        }
+      }
+    }
+
+    fetchFromGfpg();
+  }, [gfpgValue]);
 
   const handleAddToList = () => {
     const data = getValues();
@@ -522,7 +571,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
                 id="gfpg"
                 autoComplete="off"
                 className={`input ${errors.gfpg ? 'input--error' : ''}`}
-                placeholder={!referenciaValue ? "Selecione a Referência primeiro" : "Selecione o GFPG"}
+                placeholder="Ex: 1234A"
                 {...register('gfpg')}
                 onFocus={() => setIsGfpgDropdownOpen(true)}
                 onBlur={() => setTimeout(() => setIsGfpgDropdownOpen(false), 200)}
