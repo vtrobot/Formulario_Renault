@@ -181,23 +181,37 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
       if (!error && data) {
         const refs = Array.from(new Set(data.map((p: any) => String(p.referencia)).filter(Boolean)));
         setReferenciasList(refs);
+        
+        const currentRef = getValues('item');
+        const isCurrentRefValid = currentRef && refs.includes(currentRef);
+
         // Se existir apenas uma referência, preenche automaticamente
         if (refs.length === 1) {
-          setValue('item', refs[0], { shouldValidate: true });
+          if (currentRef !== refs[0]) {
+            setValue('item', refs[0], { shouldValidate: true });
+            setGfpgsList([]);
+            setValue('gfpg', '', { shouldValidate: false });
+            setValue('modelo', '', { shouldValidate: false });
+            setValue('versao', '', { shouldValidate: false });
+            setIsAutoFilled(false);
+          }
         } else {
-          setValue('item', '', { shouldValidate: false });
-          if (refs.length > 1) {
-            setTimeout(() => {
-              document.getElementById('item')?.focus();
-              setIsReferenciaDropdownOpen(true);
-            }, 50);
+          if (!isCurrentRefValid) {
+            setValue('item', '', { shouldValidate: false });
+            setGfpgsList([]);
+            setValue('gfpg', '', { shouldValidate: false });
+            setValue('modelo', '', { shouldValidate: false });
+            setValue('versao', '', { shouldValidate: false });
+            setIsAutoFilled(false);
+            
+            if (refs.length > 1) {
+              setTimeout(() => {
+                document.getElementById('item')?.focus();
+                setIsReferenciaDropdownOpen(true);
+              }, 50);
+            }
           }
         }
-        setGfpgsList([]);
-        setValue('gfpg', '', { shouldValidate: false });
-        setValue('modelo', '', { shouldValidate: false });
-        setValue('versao', '', { shouldValidate: false });
-        setIsAutoFilled(false);
       }
     }
 
@@ -218,10 +232,19 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
 
       const { data, error } = await supabase
         .from('pecas')
-        .select('gfpg')
+        .select('gfpg, nome_peca')
         .eq('referencia', referenciaValue);
 
-      if (!error && data) {
+      if (!error && data && data.length > 0) {
+        // Preenche Nome da Peça se não estiver preenchido ou for diferente
+        const nomesPecas = Array.from(new Set(data.map((p: any) => p.nome_peca).filter(Boolean)));
+        if (nomesPecas.length > 0) {
+          const currentNomePeca = getValues('nomePeca');
+          if (!currentNomePeca || !nomesPecas.includes(currentNomePeca)) {
+            setValue('nomePeca', nomesPecas[0] as string, { shouldValidate: true });
+          }
+        }
+
         const gfpgs = Array.from(new Set(data.map((p: any) => p.gfpg).filter(Boolean)));
         setGfpgsList(gfpgs);
         // Se existir apenas um GFPG, preenche automaticamente
@@ -432,7 +455,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
                 id="item"
                 autoComplete="off"
                 className={`input ${errors.item ? 'input--error' : ''}`}
-                placeholder={!nomePecaValue ? "Selecione o Nome da Peça primeiro" : "Selecione a Referência"}
+                placeholder="Ex: 8200123456"
                 {...register('item')}
                 onFocus={() => setIsReferenciaDropdownOpen(true)}
                 onBlur={() => setTimeout(() => setIsReferenciaDropdownOpen(false), 200)}
