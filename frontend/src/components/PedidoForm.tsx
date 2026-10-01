@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,6 +18,23 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { CsvImportModal } from './CsvImportModal';
+
+const highlightText = (text: string, highlight: string) => {
+  if (!highlight || !highlight.trim()) return <span>{text}</span>;
+  const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+  return (
+    <span>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <b key={i} style={{ color: 'var(--color-primary-light, #60A5FA)' }}>{part}</b>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </span>
+  );
+};
 
 /* ─── Validation Schema ──────────────────────────────────────────── */
 const pedidoSchema = z.object({
@@ -70,7 +87,23 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
 
   const [pecasList, setPecasList] = useState<string[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [pecasPage, setPecasPage] = useState(1);
+  const [hasMorePecas, setHasMorePecas] = useState(true);
+  const [loadingPecas, setLoadingPecas] = useState(false);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastSearchedTerm = useRef<string>('');
   const nomePecaValue = watch('nomePeca');
+
+  const lastPecaElementRef = useCallback((node: HTMLLIElement | null) => {
+    if (loadingPecas) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMorePecas) {
+        setPecasPage(prevPage => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loadingPecas, hasMorePecas]);
 
   const [referenciasList, setReferenciasList] = useState<string[]>([]);
   const [isReferenciaDropdownOpen, setIsReferenciaDropdownOpen] = useState(false);
@@ -85,15 +118,38 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
     async function searchPecas() {
       if (!supabase) return;
       
-      if (!nomePecaValue || nomePecaValue.trim() === '') {
+      const currentTerm = nomePecaValue || '';
+      if (currentTerm.trim() === '') {
         setPecasList([]);
         return;
       }
 
-      const { data, error } = await supabase.rpc('buscar_pecas', { termo: nomePecaValue });
-      if (!error && data) {
-        setPecasList(data.map((p: any) => p.nome_peca).filter(Boolean));
+      let currentPage = pecasPage;
+      if (lastSearchedTerm.current !== currentTerm) {
+        setPecasPage(1);
+        setHasMorePecas(true);
+        currentPage = 1;
+        lastSearchedTerm.current = currentTerm;
       }
+
+      setLoadingPecas(true);
+      const limit = 20;
+
+      const { data, error } = await supabase.rpc('buscar_pecas', { 
+        termo: currentTerm,
+        limite: limit,
+        pagina: currentPage
+      });
+
+      if (!error && data) {
+        const results = data.map((p: any) => p.nome_peca).filter(Boolean);
+        setPecasList(prev => currentPage === 1 ? results : [...prev, ...results]);
+        setHasMorePecas(results.length >= limit);
+      } else {
+        if (currentPage === 1) setPecasList([]);
+        setHasMorePecas(false);
+      }
+      setLoadingPecas(false);
     }
 
     const timeoutId = setTimeout(() => {
@@ -101,7 +157,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [nomePecaValue]);
+  }, [nomePecaValue, pecasPage]);
 
   // Ao selecionar Nome da Peça, carrega as Referências vinculadas
   useEffect(() => {
@@ -275,7 +331,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
               />
               {errors.nomePeca && <span className="error-text">{errors.nomePeca.message}</span>}
               
-              {isDropdownOpen && pecasList.length > 0 && (
+              {isDropdownOpen && (nomePecaValue || pecasList.length > 0) && (
                 <ul
                   style={{
                     position: 'absolute',
@@ -283,42 +339,58 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
                     left: 0,
                     right: 0,
                     zIndex: 50,
-                    maxHeight: '200px',
+                    maxHeight: '250px',
                     overflowY: 'auto',
                     backgroundColor: 'var(--color-slate-800, #1E293B)',
                     border: '1px solid var(--color-slate-700, #334155)',
                     borderRadius: '0.375rem',
                     marginTop: '0.25rem',
                     padding: '0.25rem',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)',
                     listStyle: 'none',
                   }}
                 >
-                  {pecasList.map((peca, idx) => (
-                    <li
-                      key={idx}
-                      style={{
-                        padding: '0.5rem 0.75rem',
-                        cursor: 'pointer',
-                        color: 'var(--color-slate-50, #F8FAFC)',
-                        borderRadius: '0.25rem',
-                        transition: 'background-color 0.2s',
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        setValue('nomePeca', peca, { shouldValidate: true });
-                        setIsDropdownOpen(false);
-                      }}
-                      onMouseOver={(e) => {
-                        (e.currentTarget as HTMLLIElement).style.backgroundColor = 'var(--color-slate-700, #334155)';
-                      }}
-                      onMouseOut={(e) => {
-                        (e.currentTarget as HTMLLIElement).style.backgroundColor = 'transparent';
-                      }}
-                    >
-                      {peca}
+                  {nomePecaValue && pecasList.length === 0 && !loadingPecas ? (
+                    <li style={{ padding: '0.5rem 0.75rem', color: 'var(--color-slate-400, #94A3B8)', fontStyle: 'italic' }}>
+                      Nenhuma peça encontrada para "{nomePecaValue}"
                     </li>
-                  ))}
+                  ) : null}
+                  
+                  {pecasList.map((peca, idx) => {
+                    const isLast = idx === pecasList.length - 1;
+                    return (
+                      <li
+                        key={idx}
+                        ref={isLast ? lastPecaElementRef : null}
+                        style={{
+                          padding: '0.5rem 0.75rem',
+                          cursor: 'pointer',
+                          color: 'var(--color-slate-50, #F8FAFC)',
+                          borderRadius: '0.25rem',
+                          transition: 'background-color 0.2s',
+                        }}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          setValue('nomePeca', peca, { shouldValidate: true });
+                          setIsDropdownOpen(false);
+                        }}
+                        onMouseOver={(e) => {
+                          (e.currentTarget as HTMLLIElement).style.backgroundColor = 'var(--color-slate-700, #334155)';
+                        }}
+                        onMouseOut={(e) => {
+                          (e.currentTarget as HTMLLIElement).style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        {highlightText(peca, nomePecaValue || '')}
+                      </li>
+                    );
+                  })}
+                  
+                  {loadingPecas && (
+                    <li style={{ padding: '0.5rem 0.75rem', color: 'var(--color-slate-400, #94A3B8)', textAlign: 'center' }}>
+                      <span style={{ fontSize: '0.875rem' }}>Carregando...</span>
+                    </li>
+                  )}
                 </ul>
               )}
             </div>
