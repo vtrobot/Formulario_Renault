@@ -54,6 +54,25 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
     }
   };
 
+  const handleExportCSV = () => {
+    if (items.length === 0) return;
+
+    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade';
+    const linhas = items.map(
+      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade}`
+    );
+    const csvContent = [header, ...linhas].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'pedidos.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <section className="card table-section">
       <div className="card-header">
@@ -73,7 +92,7 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
         </div>
         {items.length > 0 && (
           <div className="table-header-actions">
-            <button type="button" className="btn-link">
+            <button type="button" className="btn-link" onClick={handleExportCSV}>
               <Download size={14} strokeWidth={1.75} />
               Exportar
             </button>
