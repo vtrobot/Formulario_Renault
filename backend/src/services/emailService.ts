@@ -55,7 +55,7 @@ export const emailService = {
       throw new Error('Variáveis MAIL_TO ou MAIL_FROM não configuradas');
     }
 
-    const assunto = lote.chavePedido ? `PedidosRenault - ${lote.chavePedido}` : 'PedidosRenault';
+    const assunto = 'PedidosRenault';
 
     // Header row
     const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido';
