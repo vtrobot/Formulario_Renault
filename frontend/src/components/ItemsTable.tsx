@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import type { PedidoItem } from '../types/pedido';
 import { api } from '../services/api';
+import { supabase } from '../lib/supabase';
 import {
   Table2,
   Download,
@@ -18,11 +19,12 @@ import {
 
 interface ItemsTableProps {
   items: PedidoItem[];
+  chavePedido: string;
   onRemoveItem: (id: string) => void;
   onClearAll: () => void;
 }
 
-export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps) {
+export function ItemsTable({ items, chavePedido, onRemoveItem, onClearAll }: ItemsTableProps) {
   const totalModelos = new Set(items.map((i) => i.modelo)).size;
   const totalQuantidade = items.reduce((acc, i) => acc + Number(i.quantidade), 0);
 
@@ -38,10 +40,31 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
     setSendMessage('');
 
     try {
+      // 1. Salvar no Supabase
+      const { error: supabaseError } = await supabase
+        .from('pedidos_enviados')
+        .insert(
+          items.map((item) => ({
+            chave_pedido: chavePedido,
+            item: item.item,
+            modelo: item.modelo,
+            versao: item.versao,
+            nome_peca: item.nomePeca,
+            gfpg: item.gfpg,
+            quantidade: Number(item.quantidade),
+          }))
+        );
+
+      if (supabaseError) {
+        console.error('Erro ao salvar no Supabase:', supabaseError);
+        throw new Error('Não foi possível salvar os itens no banco de dados.');
+      }
+
+      // 2. Enviar por e-mail
       const itensParaEnviar = items.map(({ id, subtotalLcpu, ...rest }) => rest);
-      const result = await api.enviarPedidoLote(itensParaEnviar);
+      const result = await api.enviarPedidoLote(itensParaEnviar, chavePedido);
       setSendStatus('success');
-      setSendMessage(result.message || 'Itens enviados por e-mail com sucesso!');
+      setSendMessage(result.message || 'Itens salvos e enviados por e-mail com sucesso!');
       onClearAll();
       setTimeout(() => setSendStatus('idle'), 6000);
     } catch (error: any) {
@@ -57,9 +80,9 @@ export function ItemsTable({ items, onRemoveItem, onClearAll }: ItemsTableProps)
   const handleExportCSV = () => {
     if (items.length === 0) return;
 
-    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade';
+    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido';
     const linhas = items.map(
-      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade}`
+      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade};${chavePedido}`
     );
     const csvContent = [header, ...linhas].join('\n');
 

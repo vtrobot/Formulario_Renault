@@ -22,7 +22,7 @@ export const emailService = {
 
     const assunto = 'PedidosRenault';
 
-    const corpo = `Item;Modelo;Versao;NomePeca;GfPg;Quantidade|${pedido.item};${pedido.modelo};${pedido.versao};${pedido.nomePeca};${pedido.gfpg};${pedido.quantidade}`;
+    const corpo = `Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido|${pedido.item};${pedido.modelo};${pedido.versao};${pedido.nomePeca};${pedido.gfpg};${pedido.quantidade};${pedido.chavePedido || ''}`;
 
     try {
       const data = await resend.emails.send({
@@ -55,14 +55,14 @@ export const emailService = {
       throw new Error('Variáveis MAIL_TO ou MAIL_FROM não configuradas');
     }
 
-    const assunto = 'PedidosRenault';
+    const assunto = lote.chavePedido ? `PedidosRenault - ${lote.chavePedido}` : 'PedidosRenault';
 
     // Header row
-    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade';
+    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido';
 
     // Each item as a separate line
     const linhas = lote.itens.map(
-      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade}`
+      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade};${lote.chavePedido || item.chavePedido || ''}`
     );
 
     const corpo = [header, ...linhas].join('|');

@@ -21,13 +21,13 @@ export const api = {
     return data;
   },
 
-  async enviarPedidoLote(itens: PedidoInput[]) {
+  async enviarPedidoLote(itens: PedidoInput[], chavePedido: string) {
     const response = await fetch(`${API_URL}/pedidos/lote`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ itens }),
+      body: JSON.stringify({ chavePedido, itens }),
     });
 
     const data = await response.json();

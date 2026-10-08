@@ -10,11 +10,13 @@ export const pedidoSchema = z.object({
     const num = Number(val);
     return !isNaN(num) && num > 0;
   }, { message: "Deve ser um número maior que zero" }),
+  chavePedido: z.string().optional(),
 });
 
 export type PedidoInput = z.infer<typeof pedidoSchema>;
 
 export const pedidoLoteSchema = z.object({
+  chavePedido: z.string().optional(),
   itens: z.array(pedidoSchema).min(1, "Pelo menos um item é obrigatório"),
 });
 
