@@ -41,6 +41,10 @@ export function ItemsTable({ items, chavePedido, onRemoveItem, onClearAll }: Ite
 
     try {
       // 1. Salvar no Supabase
+      if (!supabase) {
+        throw new Error('Supabase não configurado. Verifique as variáveis de ambiente.');
+      }
+      
       const { error: supabaseError } = await supabase
         .from('pedidos_enviados')
         .insert(
