@@ -44,7 +44,7 @@ export function ItemsTable({ items, chavePedido, onRemoveItem, onClearAll }: Ite
       if (!supabase) {
         throw new Error('Supabase não configurado. Verifique as variáveis de ambiente.');
       }
-      
+
       const { error: supabaseError } = await supabase
         .from('pedidos_enviados')
         .insert(
@@ -109,7 +109,7 @@ export function ItemsTable({ items, chavePedido, onRemoveItem, onClearAll }: Ite
           </div>
           <div>
             <div className="table-header-title">
-              <h2 className="card-title">Itens Adicionados ao Pedido</h2>
+              <h2 className="card-title">Itens Adicionados para o cálculo de cubagem</h2>
               {items.length > 0 && (
                 <span className="badge badge--count">{items.length} {items.length === 1 ? 'item' : 'itens'}</span>
               )}
@@ -229,7 +229,7 @@ export function ItemsTable({ items, chavePedido, onRemoveItem, onClearAll }: Ite
           ) : (
             <Send size={16} strokeWidth={1.75} />
           )}
-          {isSending ? 'Enviando...' : 'Enviar Pedido'}
+          {isSending ? 'Enviando...' : 'Enviar Cálculo'}
         </button>
       </div>
     </section>

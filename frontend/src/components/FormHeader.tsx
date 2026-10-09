@@ -8,7 +8,7 @@ export function FormHeader({ onFillExample: _onFillExample }: FormHeaderProps) {
   return (
     <div className="page-header">
       <h1 className="page-title">
-        Novo Pedido de <span className="page-title-dot"></span>LCPU
+        Novo Cálculo de Cubagem
       </h1>
       {/* <p className="page-subtitle">
         Entrada paramétrica de componentes industriais com apuração em tempo real

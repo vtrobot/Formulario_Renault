@@ -118,7 +118,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
   useEffect(() => {
     async function searchPecas() {
       if (!supabase) return;
-      
+
       const currentTerm = nomePecaValue || '';
       if (currentTerm.trim() === '') {
         setPecasList([]);
@@ -136,7 +136,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
       setLoadingPecas(true);
       const limit = 20;
 
-      const { data, error } = await supabase.rpc('buscar_pecas', { 
+      const { data, error } = await supabase.rpc('buscar_pecas', {
         termo: currentTerm,
         limite: limit,
         pagina: currentPage
@@ -182,7 +182,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
       if (!error && data) {
         const refs = Array.from(new Set(data.map((p: any) => String(p.referencia)).filter(Boolean)));
         setReferenciasList(refs);
-        
+
         const currentRef = getValues('item');
         const isCurrentRefValid = currentRef && refs.includes(currentRef);
 
@@ -204,7 +204,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
             setValue('modelo', '', { shouldValidate: false });
             setValue('versao', '', { shouldValidate: false });
             setIsAutoFilled(false);
-            
+
             if (refs.length > 1) {
               setTimeout(() => {
                 document.getElementById('item')?.focus();
@@ -273,7 +273,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
           setValue('modelo', '', { shouldValidate: false });
           setValue('versao', '', { shouldValidate: false });
           setIsAutoFilled(false);
-          
+
           if (gfpgs.length > 1) {
             setTimeout(() => {
               document.getElementById('gfpg')?.focus();
@@ -375,9 +375,9 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
             <Settings2 size={20} strokeWidth={1.75} />
           </div>
           <div>
-            <h2 className="card-title">Parâmetros do Pedido</h2>
+            <h2 className="card-title">Parâmetros para o Cálculo de cubagem</h2>
             <p className="card-description">
-              Preencha os campos do formulário e adicione à lista de itens para cálculo do LCPU
+              Preencha os campos do formulário e adicione os itens à lista
             </p>
           </div>
         </div>
@@ -431,7 +431,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
                 onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
               />
               {errors.nomePeca && <span className="error-text">{errors.nomePeca.message}</span>}
-              
+
               {isDropdownOpen && (nomePecaValue || pecasList.length > 0) && (
                 <ul
                   style={{
@@ -456,7 +456,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
                       Nenhuma peça encontrada para "{nomePecaValue}"
                     </li>
                   ) : null}
-                  
+
                   {pecasList.map((peca, idx) => {
                     const isLast = idx === pecasList.length - 1;
                     return (
@@ -486,7 +486,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
                       </li>
                     );
                   })}
-                  
+
                   {loadingPecas && (
                     <li style={{ padding: '0.5rem 0.75rem', color: 'var(--color-slate-400, #94A3B8)', textAlign: 'center' }}>
                       <span style={{ fontSize: '0.875rem' }}>Carregando...</span>
