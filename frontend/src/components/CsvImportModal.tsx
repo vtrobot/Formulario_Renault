@@ -77,6 +77,10 @@ export function CsvImportModal({ onClose, onImport }: CsvImportModalProps) {
           nomePeca,
           gfpg,
           quantidade: quantidadeStr,
+          projeto: '',
+          area: '',
+          milestone: '',
+          email: '',
           subtotalLcpu: Math.round(qty * (14.5 + Math.random() * 3) * 100) / 100,
         });
       }

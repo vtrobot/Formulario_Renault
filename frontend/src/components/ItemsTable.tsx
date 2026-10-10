@@ -84,9 +84,9 @@ export function ItemsTable({ items, chavePedido, onRemoveItem, onClearAll }: Ite
   const handleExportCSV = () => {
     if (items.length === 0) return;
 
-    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido';
+    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade;Projeto;Area;Milestone;Email;ChavePedido';
     const linhas = items.map(
-      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade};${chavePedido}`
+      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade};${item.projeto};${item.area};${item.milestone};${item.email};${chavePedido}`
     );
     const csvContent = [header, ...linhas].join('\n');
 
@@ -153,7 +153,7 @@ export function ItemsTable({ items, chavePedido, onRemoveItem, onClearAll }: Ite
               <th>Versão</th>
               <th>Nome da Peça</th>
               <th>GFPG</th>
-              <th>Qtd</th>
+              <th>Quantidade</th>
               <th>Ações</th>
             </tr>
           </thead>

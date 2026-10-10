@@ -15,6 +15,10 @@ import {
   Eraser,
   ListPlus,
   Upload,
+  Briefcase,
+  Map,
+  Flag,
+  Mail,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { CsvImportModal } from './CsvImportModal';
@@ -50,6 +54,10 @@ const pedidoSchema = z.object({
     },
     { message: 'Deve ser um número maior que zero' }
   ),
+  projeto: z.string().min(1, 'Obrigatório').max(100),
+  area: z.string().min(1, 'Obrigatório').max(100),
+  milestone: z.string().min(1, 'Obrigatório').max(100),
+  email: z.union([z.literal(''), z.string().email('E-mail inválido').max(150)]).optional(),
 });
 
 type PedidoFormValues = z.infer<typeof pedidoSchema>;
@@ -82,6 +90,10 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
       nomePeca: '',
       gfpg: '',
       quantidade: '',
+      projeto: '',
+      area: '',
+      milestone: '',
+      email: '',
     },
   });
 
@@ -338,7 +350,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
   const handleAddToList = () => {
     const data = getValues();
     // Basic validation before adding to list
-    if (!data.item || !data.modelo || !data.versao || !data.nomePeca || !data.gfpg || !data.quantidade) {
+    if (!data.item || !data.modelo || !data.versao || !data.nomePeca || !data.gfpg || !data.quantidade || !data.projeto || !data.area || !data.milestone) {
       setSubmitStatus('error');
       setErrorMessage('Preencha todos os campos obrigatórios antes de adicionar à lista.');
       setTimeout(() => setSubmitStatus('idle'), 5000);
@@ -360,6 +372,10 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
       nomePeca: data.nomePeca,
       gfpg: data.gfpg,
       quantidade: data.quantidade,
+      projeto: data.projeto,
+      area: data.area,
+      milestone: data.milestone,
+      email: data.email || '',
       subtotalLcpu: Math.round(qty * (14.5 + Math.random() * 3) * 100) / 100,
     };
 
@@ -392,7 +408,15 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
           onClose={() => setIsModalOpen(false)}
           onImport={(items) => {
             if (onAddItems) {
-              onAddItems(items);
+              const currentValues = getValues();
+              const itemsWithContext = items.map(item => ({
+                ...item,
+                projeto: currentValues.projeto || item.projeto,
+                area: currentValues.area || item.area,
+                milestone: currentValues.milestone || item.milestone,
+                email: currentValues.email || item.email,
+              }));
+              onAddItems(itemsWithContext);
             }
           }}
         />
@@ -413,7 +437,79 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
 
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="form-grid">
-          {/* Row 1: Nome da Peça + Referência */}
+          {/* Row 1: Projeto + Área */}
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label" htmlFor="projeto">
+                <Briefcase size={14} className="form-label-icon" strokeWidth={1.75} />
+                Projeto
+              </label>
+              <input
+                id="projeto"
+                className={`input ${errors.projeto ? 'input--error' : ''}`}
+                placeholder="Ex: HJD"
+                {...register('projeto')}
+              />
+              {errors.projeto && (
+                <span className="error-text">{errors.projeto.message}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="area">
+                <Map size={14} className="form-label-icon" strokeWidth={1.75} />
+                Área
+              </label>
+              <input
+                id="area"
+                className={`input ${errors.area ? 'input--error' : ''}`}
+                placeholder="Ex: Carroceria"
+                {...register('area')}
+              />
+              {errors.area && (
+                <span className="error-text">{errors.area.message}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Row 2: Milestone + E-mail */}
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label" htmlFor="milestone">
+                <Flag size={14} className="form-label-icon" strokeWidth={1.75} />
+                Milestone
+              </label>
+              <input
+                id="milestone"
+                className={`input ${errors.milestone ? 'input--error' : ''}`}
+                placeholder="Ex: M1"
+                {...register('milestone')}
+              />
+              {errors.milestone && (
+                <span className="error-text">{errors.milestone.message}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="email">
+                <Mail size={14} className="form-label-icon" strokeWidth={1.75} />
+                E-mail
+                <span className="form-sublabel" style={{ marginLeft: '4px', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}></span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                className={`input ${errors.email ? 'input--error' : ''}`}
+                placeholder="exemplo@email.com"
+                {...register('email')}
+              />
+              {errors.email && (
+                <span className="error-text">{errors.email.message}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Row 2: Nome da Peça + Referência */}
           <div className="form-row">
             <div className="form-group" style={{ position: 'relative' }}>
               <label className="form-label" htmlFor="nomePeca">
@@ -700,6 +796,7 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
               )}
             </div>
           </div>
+
         </div>
 
         {/* Actions */}

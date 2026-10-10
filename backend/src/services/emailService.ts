@@ -22,7 +22,7 @@ export const emailService = {
 
     const assunto = 'PedidosRenault';
 
-    const corpo = `Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido|${pedido.item};${pedido.modelo};${pedido.versao};${pedido.nomePeca};${pedido.gfpg};${pedido.quantidade};${pedido.chavePedido || ''}`;
+    const corpo = `Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido;email;nomeprojeto;areademandante;mailestone|${pedido.item};${pedido.modelo};${pedido.versao};${pedido.nomePeca};${pedido.gfpg};${pedido.quantidade};${pedido.chavePedido || ''};${pedido.email};${pedido.projeto};${pedido.area};${pedido.milestone}`;
 
     try {
       const data = await resend.emails.send({
@@ -58,11 +58,11 @@ export const emailService = {
     const assunto = 'PedidosRenault';
 
     // Header row
-    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido';
+    const header = 'Item;Modelo;Versao;NomePeca;GfPg;Quantidade;ChavePedido;email;nomeprojeto;areademandante;mailestone';
 
     // Each item as a separate line
     const linhas = lote.itens.map(
-      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade};${lote.chavePedido || item.chavePedido || ''}`
+      (item) => `${item.item};${item.modelo};${item.versao};${item.nomePeca};${item.gfpg};${item.quantidade};${lote.chavePedido || item.chavePedido || ''};${item.email};${item.projeto};${item.area};${item.milestone}`
     );
 
     const corpo = [header, ...linhas].join('|');

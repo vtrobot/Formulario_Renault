@@ -10,6 +10,10 @@ export const pedidoSchema = z.object({
     const num = Number(val);
     return !isNaN(num) && num > 0;
   }, { message: "Deve ser um número maior que zero" }),
+  projeto: z.string().min(1, "Obrigatório"),
+  area: z.string().min(1, "Obrigatório"),
+  milestone: z.string().min(1, "Obrigatório"),
+  email: z.union([z.literal(''), z.string().email("E-mail inválido").max(150)]).optional(),
   chavePedido: z.string().optional(),
 });
 
