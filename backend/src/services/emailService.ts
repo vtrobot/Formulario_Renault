@@ -13,11 +13,21 @@ export const emailService = {
       throw new Error('RESEND_API_KEY não configurada');
     }
 
-    const mailTo = process.env.MAIL_TO;
-    const mailFrom = process.env.MAIL_FROM;
+    const rawMailTo = process.env.MAIL_TO;
+    const rawMailFrom = process.env.MAIL_FROM;
 
-    if (!mailTo || !mailFrom) {
+    if (!rawMailTo || !rawMailFrom) {
       throw new Error('Variáveis MAIL_TO ou MAIL_FROM não configuradas');
+    }
+
+    const mailFrom = rawMailFrom.trim();
+    const mailTo = rawMailTo
+      .split(/[,;]/)
+      .map((e) => e.trim())
+      .filter(Boolean);
+
+    if (mailTo.length === 0) {
+      throw new Error('Destinatário MAIL_TO inválido ou vazio');
     }
 
     const assunto = 'PedidosRenault';
@@ -48,11 +58,21 @@ export const emailService = {
       throw new Error('RESEND_API_KEY não configurada');
     }
 
-    const mailTo = process.env.MAIL_TO;
-    const mailFrom = process.env.MAIL_FROM;
+    const rawMailTo = process.env.MAIL_TO;
+    const rawMailFrom = process.env.MAIL_FROM;
 
-    if (!mailTo || !mailFrom) {
+    if (!rawMailTo || !rawMailFrom) {
       throw new Error('Variáveis MAIL_TO ou MAIL_FROM não configuradas');
+    }
+
+    const mailFrom = rawMailFrom.trim();
+    const mailTo = rawMailTo
+      .split(/[,;]/)
+      .map((e) => e.trim())
+      .filter(Boolean);
+
+    if (mailTo.length === 0) {
+      throw new Error('Destinatário MAIL_TO inválido ou vazio');
     }
 
     const assunto = 'PedidosRenault';

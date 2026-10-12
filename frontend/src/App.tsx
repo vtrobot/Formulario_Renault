@@ -71,15 +71,22 @@ function App() {
     });
   };
 
+  const [formResetKey, setFormResetKey] = useState<number>(0);
+
   const handleClearAll = () => {
     setItems([]);
     setChavePedido('');
+    setFormResetKey((prev) => prev + 1);
   };
 
   return (
     <div className="page">
       <FormHeader onFillExample={() => {}} />
-      <PedidoForm onAddItem={handleAddItem} onAddItems={handleAddItems} />
+      <PedidoForm
+        onAddItem={handleAddItem}
+        onAddItems={handleAddItems}
+        resetKey={formResetKey}
+      />
       <ItemsTable
         items={items}
         chavePedido={chavePedido}

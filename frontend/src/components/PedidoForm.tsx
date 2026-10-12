@@ -66,9 +66,10 @@ type PedidoFormValues = z.infer<typeof pedidoSchema>;
 interface PedidoFormProps {
   onAddItem: (item: PedidoItem) => void;
   onAddItems?: (items: PedidoItem[]) => void;
+  resetKey?: number;
 }
 
-export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
+export function PedidoForm({ onAddItem, onAddItems, resetKey }: PedidoFormProps) {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -96,6 +97,23 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
       email: '',
     },
   });
+
+  useEffect(() => {
+    if (resetKey !== undefined && resetKey > 0) {
+      reset({
+        item: '',
+        modelo: '',
+        versao: '',
+        nomePeca: '',
+        gfpg: '',
+        quantidade: '',
+        projeto: '',
+        area: '',
+        milestone: '',
+        email: '',
+      });
+    }
+  }, [resetKey, reset]);
 
   const [pecasList, setPecasList] = useState<string[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -380,7 +398,18 @@ export function PedidoForm({ onAddItem, onAddItems }: PedidoFormProps) {
     };
 
     onAddItem(newItem);
-    reset();
+    reset({
+      projeto: data.projeto,
+      area: data.area,
+      milestone: data.milestone,
+      email: data.email,
+      item: '',
+      modelo: '',
+      versao: '',
+      nomePeca: '',
+      gfpg: '',
+      quantidade: '',
+    });
   };
 
   return (
